@@ -1,0 +1,128 @@
+.hero-section {
+    height: 300px;
+    width: calc(100% - 20px);
+    display: grid;
+    /* grid-gap: 10px; */
+    grid-template-columns: 70% 30%;
+    background-color: #fff;
+    box-sizing: content-box;
+    padding: 10px;
+    box-shadow: 2px 0px 20px rgba(255, 255, 255, 0.192);
+}
+
+.hero-section .right-section {
+    padding-left: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.hero-section .right-section img {
+    width: 100%;
+    height: calc(100px - 7px);
+}
+
+.categories {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    color: #fff;
+    gap: 10px;
+}
+
+.categories div {
+    position: relative;
+    display: flex !important;
+    align-items: center !important;
+    background-color: blueviolet;
+    height: 100%;
+    width: 100%;
+    transform: skewY(-5deg);
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+
+.categories div img {
+    height: 65px;
+    width: 65px;
+    position: relative;
+    display: block;
+}
+
+.categories div p {
+    display: block;
+    font-size: 1.2em;
+    margin: 0em .7em 0em .7em;
+}
+
+.categories div svg {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.3em;
+}
+
+.categories div:hover {
+    /* transform: scale(1.2); */
+    background-color: rgb(110, 34, 182);
+
+}
+
+.categories div:hover img {
+    transform: scale(1.2);
+}
+
+.categories div:hover svg {
+    /* transform: scale(1.2); */
+    color: #c2a7a7;
+}
+
+.flsh-sale .inner-product-collection {
+    background-color: #0C1322;
+    background-color: blueviolet;
+}
+
+.flsh-sale .inner-product-collection .count-section {
+    display: flex;
+    align-items: center;
+    padding: 1.6em 1em;
+    color: #fff;
+}
+
+.flsh-sale .inner-product-collection .count-section .on-sale-now {
+    color: yellow;
+}
+
+.flsh-sale .inner-product-collection .count-section .ending {
+    margin: 0px 10px 0px 70px;
+}
+
+.flsh-sale .inner-product-collection .count-section .count-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+
+
+.flsh-sale .inner-product-collection .count-section .count-box p {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    width: 40px;
+    gap: 10px;
+    background-color: #FF6801;
+    font-weight: 800;
+}
+
+
+.service-colloction .inner-service-colloction, .product-collection .inner-product-collection {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 20px;
+    /* background-color: blueviolet; */
+    background-color: #0C1322;
+    padding: 20px 0px;
+}
