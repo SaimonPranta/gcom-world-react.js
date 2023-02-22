@@ -1,8 +1,26 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import "./Registation.css";
-import Select from "react-select";
 import countryList from "react-select-country-list";
+import { useFormik } from "formik";
+import { singUpSchema } from "../../../Schemas";
+
+const initialFormValue = {
+      fullName: "",
+      fatherName: "",
+      motherName: "",
+      gender: "male",
+      phoneNumber: "",
+      userID: "",
+      eamil: "",
+      address: "",
+      country: "",
+      nid: "",
+      referID: "",
+      password: "",
+      confirmPassword: "",
+    };
+
 
 const Registation = () => {
   const [inputUser, setInputUser] = useState({});
@@ -13,9 +31,16 @@ const Registation = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state ? location.state.from.pathname : "/";
-  const options = useMemo(() => countryList().getData(), []);
   const { referID } = useParams();
+  const { values, errors, handleChange, handleSubmit } = useFormik({
+    initialValues: initialFormValue,
+    // validationSchema: singUpSchema,
+    onSubmit: (values) => {
+      console.log(values);
+    },
+  });
 
+  console.log(errors);
   useEffect(() => {
     user._id && navigate(from, { replace: true });
   }, [user]);
@@ -46,6 +71,8 @@ const Registation = () => {
     //   // failed("You Porved Phone Number are Invalid !");
     // });
   };
+
+  
 
   const registationFormHanle = (e) => {
     e.preventDefault();
@@ -175,7 +202,7 @@ const Registation = () => {
     <section className="authentication m-auto text-white">
       {!condition && (
         <form
-          onSubmit={registationFormHanle}
+          onSubmit={handleSubmit}
           autoComplete="off"
           autoCorrect="off"
           id="registation_form"
@@ -186,15 +213,15 @@ const Registation = () => {
             type="text"
             placeholder="Full Name"
             name="fullName"
-            value={inputUser.fullName ? inputUser.fullName : ""}
-            required
+            value={values.fullName}
             autoComplete="off"
             style={{ textTransform: "capitalize" }}
-            onChange={fromInputHandler}
+            onChange={handleChange}
           />
+          {errors.fullName && <p className="form-error">{errors.fullName}</p>}
           <div className="select">
             <label>Gender</label>
-            <select name="gender" id="gender">
+            <select name="gender" value={values.gender} onChange={handleChange}>
               <option value="male">Male</option>
               <option value="female">Female</option>
             </select>
@@ -204,101 +231,131 @@ const Registation = () => {
             type="text"
             placeholder="Father Name"
             name="fatherName"
-            value={inputUser.fatherName ? inputUser.fatherName : ""}
-            required
+            value={values.fatherName}
             autoComplete="off"
             style={{ textTransform: "capitalize" }}
-            onChange={fromInputHandler}
+            onChange={handleChange}
           />
+          {errors.fatherName && (
+            <p className="form-error">{errors.fatherName}</p>
+          )}
+
           <label>Mother Name</label>
           <input
             type="text"
             placeholder="Mother Name"
             name="motherName"
-            value={inputUser.motherName ? inputUser.motherName : ""}
-            required
+            value={values.motherName}
             autoComplete="off"
             style={{ textTransform: "capitalize" }}
-            onChange={fromInputHandler}
+            onChange={handleChange}
           />
+          {errors.motherName && (
+            <p className="form-error">{errors.motherName}</p>
+          )}
+
+          <label>phone Number</label>
+          <input
+            type="text"
+            placeholder="phone Number"
+            name="phoneNumber"
+            value={values.phoneNumber}
+            autoComplete="off"
+            onChange={handleChange}
+          />
+          {errors.phoneNumber && (
+            <p className="form-error">{errors.phoneNumber}</p>
+          )}
+
           <label>User Id</label>
           <input
             type="text"
             placeholder="User Id"
             name="userID"
-            value={inputUser.userID ? inputUser.userID : ""}
-            required
+            value={values.userID}
             autoComplete="off"
-            style={{ textTransform: "capitalize" }}
-            onChange={fromInputHandler}
+            onChange={handleChange}
           />
+          {errors.userID && <p className="form-error">{errors.userID}</p>}
+
           <label>Email Address</label>
           <input
             type="text"
             placeholder="Email Address"
             name="eamil"
-            value={inputUser.eamil ? inputUser.eamil : ""}
-            required
+            value={values.eamil}
             autoComplete="off"
             style={{ textTransform: "capitalize" }}
-            onChange={fromInputHandler}
+            onChange={handleChange}
           />
+          {errors.email && <p className="form-error">{errors.email}</p>}
 
           <label>Address</label>
           <input
             type="text"
             placeholder="Address"
             name="address"
-            value={inputUser.address ? inputUser.address : ""}
-            required
+            value={values.address}
             autoComplete="off"
-            onChange={fromInputHandler}
+            onChange={handleChange}
           />
+          {errors.address && <p className="form-error">{errors.address}</p>}
+
           <div className="select">
             <label>Country</label>
-            <Select options={options} value={value} onChange={changeHandler} />
+            <select value={values.country}>
+              {countryList().getData() && countryList().getData().map( value => {
+                return <option value={value.label}>{value.label}</option>;
+              })}
+              
+            </select>
+            {errors.country && <p className="form-error">{errors.country}</p>}
           </div>
           <label>NID</label>
           <input
             type="text"
             placeholder="NID"
             name="nid"
-            value={inputUser.nid ? inputUser.nid : ""}
-            required
+            value={values.nid}
             autoComplete="off"
-            onChange={fromInputHandler}
+            onChange={handleChange}
           />
+          {errors.nid && <p className="form-error">{errors.nid}</p>}
+
           <label>Referral ID</label>
           <input
             type="text"
             placeholder="Referral ID"
             name="refferalID"
-            value={inputUser.refferalID ? inputUser.refferalID : ""}
-            required
+            value={values.refferalID}
             autoComplete="off"
-            onChange={fromInputHandler}
+            onChange={handleChange}
           />
+          {errors.referID && <p className="form-error">{errors.referID}</p>}
 
           <label>Password</label>
           <input
             type="password"
             placeholder="Password"
             name="password"
-            value={inputUser.password ? inputUser.password : ""}
-            required
+            value={values.password}
             autoComplete="off"
-            onChange={fromInputHandler}
+            onChange={handleChange}
           />
+          {errors.password && <p className="form-error">{errors.password}</p>}
+
           <label>Confirm Password</label>
           <input
             type="password"
             placeholder="Confirm Password"
             name="confirmPassword"
-            value={inputUser.confirmPassword ? inputUser.confirmPassword : ""}
-            required
+            value={values.confirmPassword}
             autoComplete="off"
-            onChange={fromInputHandler}
+            onChange={handleChange}
           />
+          {errors.confirmPassword && (
+            <p className="form-error">{errors.confirmPassword}</p>
+          )}
 
           <input type="submit" value="Next" />
           <div className="form-navigation d-flex">
@@ -330,9 +387,8 @@ const Registation = () => {
             placeholder="OTP code"
             name="otp"
             value={inputUser.otp ? inputUser.otp : ""}
-            required
             autoComplete="off"
-            onChange={fromInputHandler}
+            onChange={handleChange}
           />
           <input type="submit" value="Verify" />
 
