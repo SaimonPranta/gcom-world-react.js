@@ -230,6 +230,49 @@
     display: block;
 }
 
+.placementID {
+    position: relative;
+}
+
+.placementID .placement-id-container {
+    position: absolute;
+    bottom: 60%;
+    background-color: #ABABAB;
+    background-color: slateblue;
+    display: inline-block;
+    padding: 10px 5px;
+    border-radius: 10px;
+}
+
+.placementID .placement-id-container div {
+    overflow-y: auto;
+    height: 130px !important;
+
+}
+
+.placementID .placement-id-container h6 {
+    font-size: 1rem;
+    color: #F9A51A;
+}
+
+.placementID div p {
+    position: relative;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    margin: 5px;
+    color: #e8dbdb;
+    cursor: pointer;
+}
+
+.placementID div p:hover {
+    background-color: #000;
+}
+
+.placementID div p svg {
+    color: #fff;
+}
+
 /* ========================================== */
 @media only screen and (min-width:200px) and (max-width:1150px) {
     .authentication form {

@@ -1,30 +1,35 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import "./Registation.css";
+import ajax from "ajax";
 import countryList from "react-select-country-list";
 import { useFormik } from "formik";
 import { singUpSchema } from "../../../Schemas";
+import { BiUserCircle } from "react-icons/bi";
 
 const initialFormValue = {
-      fullName: "",
-      fatherName: "",
-      motherName: "",
-      gender: "male",
-      phoneNumber: "",
-      userID: "",
-      eamil: "",
-      address: "",
-      country: "",
-      nid: "",
-      referID: "",
-      password: "",
-      confirmPassword: "",
-    };
-
+  fullName: "",
+  fatherName: "",
+  motherName: "",
+  gender: "male",
+  phoneNumber: "",
+  userID: "",
+  placementID: "",
+  email: "",
+  address: "",
+  country: "Bangladesh",
+  nid: "",
+  referID: "",
+  password: "",
+  confirmPassword: "",
+};
 
 const Registation = () => {
   const [inputUser, setInputUser] = useState({});
   const [user, setUser] = useState({});
+  const [placemantIDs, setPlacemantIDs] = useState([]);
+  const [errorContainer, setErrorContainer] = useState({});
+
   const [condition, setCondition] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [value, setValue] = useState("");
@@ -34,13 +39,63 @@ const Registation = () => {
   const { referID } = useParams();
   const { values, errors, handleChange, handleSubmit } = useFormik({
     initialValues: initialFormValue,
-    // validationSchema: singUpSchema,
+    validationSchema: singUpSchema,
     onSubmit: (values) => {
-      console.log(values);
+      // console.log(values);
+
+      fetch(`http://localhost:8000/user/registation`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      })
+        .then((res) => res.json())
+        .then((data) => console.log(data));
     },
   });
 
-  console.log(errors);
+  useEffect(() => {
+    setErrorContainer(errors);
+  }, [errors]);
+  const handlePlacementID = (e) => {
+    const value = e.target.value;
+    if (value) {
+      fetch(`http://localhost:8000/public/get_placement_id/${value}`)
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(handleChange);
+          if (data.message) {
+            errors.referID = data.message;
+            setPlacemantIDs([]);
+          }
+          if (data.placementID) {
+            setPlacemantIDs([]);
+            values.placementID = data.placementID;
+            console.log(values.placementID);
+          } else {
+            values.placementID = "";
+          }
+          if (data.data) {
+            setPlacemantIDs(data.data);
+            errors.referID = "";
+          }
+        });
+    }
+  };
+  const handlePlacementInputID = (e) => {
+    if (values.referID) {
+      handleChange(e, "placementID");
+      errors.placementID = "";
+    } else {
+      errors.placementID =
+        "Sorry, you con't set placement ID before set Referral ID";
+      values.placementID = "";
+      console.log(errors);
+    }
+  };
+  const handleSelectPlacementID = (value) => {
+    values.placementID = value;
+    errors.placementID = "";
+  };
   useEffect(() => {
     user._id && navigate(from, { replace: true });
   }, [user]);
@@ -71,8 +126,6 @@ const Registation = () => {
     //   // failed("You Porved Phone Number are Invalid !");
     // });
   };
-
-  
 
   const registationFormHanle = (e) => {
     e.preventDefault();
@@ -218,7 +271,9 @@ const Registation = () => {
             style={{ textTransform: "capitalize" }}
             onChange={handleChange}
           />
-          {errors.fullName && <p className="form-error">{errors.fullName}</p>}
+          {errorContainer.fullName && (
+            <p className="form-error">{errorContainer.fullName}</p>
+          )}
           <div className="select">
             <label>Gender</label>
             <select name="gender" value={values.gender} onChange={handleChange}>
@@ -236,8 +291,8 @@ const Registation = () => {
             style={{ textTransform: "capitalize" }}
             onChange={handleChange}
           />
-          {errors.fatherName && (
-            <p className="form-error">{errors.fatherName}</p>
+          {errorContainer.fatherName && (
+            <p className="form-error">{errorContainer.fatherName}</p>
           )}
 
           <label>Mother Name</label>
@@ -250,8 +305,8 @@ const Registation = () => {
             style={{ textTransform: "capitalize" }}
             onChange={handleChange}
           />
-          {errors.motherName && (
-            <p className="form-error">{errors.motherName}</p>
+          {errorContainer.motherName && (
+            <p className="form-error">{errorContainer.motherName}</p>
           )}
 
           <label>phone Number</label>
@@ -263,8 +318,8 @@ const Registation = () => {
             autoComplete="off"
             onChange={handleChange}
           />
-          {errors.phoneNumber && (
-            <p className="form-error">{errors.phoneNumber}</p>
+          {errorContainer.phoneNumber && (
+            <p className="form-error">{errorContainer.phoneNumber}</p>
           )}
 
           <label>User Id</label>
@@ -276,19 +331,22 @@ const Registation = () => {
             autoComplete="off"
             onChange={handleChange}
           />
-          {errors.userID && <p className="form-error">{errors.userID}</p>}
+          {errorContainer.userID && (
+            <p className="form-error">{errorContainer.userID}</p>
+          )}
 
           <label>Email Address</label>
           <input
             type="text"
             placeholder="Email Address"
-            name="eamil"
-            value={values.eamil}
+            name="email"
+            value={values.email}
             autoComplete="off"
-            style={{ textTransform: "capitalize" }}
             onChange={handleChange}
           />
-          {errors.email && <p className="form-error">{errors.email}</p>}
+          {errorContainer.email && (
+            <p className="form-error">{errorContainer.email}</p>
+          )}
 
           <label>Address</label>
           <input
@@ -299,17 +357,27 @@ const Registation = () => {
             autoComplete="off"
             onChange={handleChange}
           />
-          {errors.address && <p className="form-error">{errors.address}</p>}
+          {errorContainer.address && (
+            <p className="form-error">{errorContainer.address}</p>
+          )}
 
           <div className="select">
             <label>Country</label>
-            <select value={values.country}>
-              {countryList().getData() && countryList().getData().map( value => {
-                return <option value={value.label}>{value.label}</option>;
-              })}
-              
+            <select
+              value={values.country}
+              name="country"
+              onChange={handleChange}
+            >
+              {countryList().getData() &&
+                countryList()
+                  .getData()
+                  .map((value) => {
+                    return <option value={value.label}>{value.label}</option>;
+                  })}
             </select>
-            {errors.country && <p className="form-error">{errors.country}</p>}
+            {errorContainer.country && (
+              <p className="form-error">{errorContainer.country}</p>
+            )}
           </div>
           <label>NID</label>
           <input
@@ -320,18 +388,54 @@ const Registation = () => {
             autoComplete="off"
             onChange={handleChange}
           />
-          {errors.nid && <p className="form-error">{errors.nid}</p>}
-
-          <label>Referral ID</label>
+          {errorContainer.nid && (
+            <p className="form-error">{errorContainer.nid}</p>
+          )}
+          <div className="placementID">
+            <label>Referral ID</label>
+            <input
+              type="text"
+              placeholder="Referral ID"
+              name="referID"
+              value={values.referID}
+              autoComplete="off"
+              onChange={handleChange}
+              onKeyUp={handlePlacementID}
+            />
+            {errorContainer.referID && (
+              <p className="form-error">{errorContainer.referID}</p>
+            )}
+            <div
+              className="placement-id-container"
+              style={{ display: placemantIDs.length ? "block" : "none" }}
+            >
+              <h6>Select Placement ID</h6>
+              <div>
+                {placemantIDs?.length &&
+                  placemantIDs.map((id) => {
+                    return (
+                      <p onClick={() => handleSelectPlacementID(id)}>
+                        <BiUserCircle />
+                        {id}
+                      </p>
+                    );
+                  })}
+              </div>
+            </div>
+          </div>
+          <label>placement ID</label>
           <input
             type="text"
-            placeholder="Referral ID"
-            name="refferalID"
-            value={values.refferalID}
+            placeholder="placement ID"
+            name="placementID"
+            value={values.placementID}
             autoComplete="off"
-            onChange={handleChange}
+            // onChange={handleChange}
+            onChange={handlePlacementInputID}
           />
-          {errors.referID && <p className="form-error">{errors.referID}</p>}
+          {errorContainer.placementID && (
+            <p className="form-error">{errorContainer.placementID}</p>
+          )}
 
           <label>Password</label>
           <input
@@ -342,7 +446,9 @@ const Registation = () => {
             autoComplete="off"
             onChange={handleChange}
           />
-          {errors.password && <p className="form-error">{errors.password}</p>}
+          {errorContainer.password && (
+            <p className="form-error">{errorContainer.password}</p>
+          )}
 
           <label>Confirm Password</label>
           <input
@@ -353,8 +459,8 @@ const Registation = () => {
             autoComplete="off"
             onChange={handleChange}
           />
-          {errors.confirmPassword && (
-            <p className="form-error">{errors.confirmPassword}</p>
+          {errorContainer.confirmPassword && (
+            <p className="form-error">{errorContainer.confirmPassword}</p>
           )}
 
           <input type="submit" value="Next" />
