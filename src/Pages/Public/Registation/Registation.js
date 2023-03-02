@@ -1,11 +1,13 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import "./Registation.css";
-import ajax from "ajax";
+import { ToastContainer } from "react-toastify";
 import countryList from "react-select-country-list";
 import { useFormik } from "formik";
 import { singUpSchema } from "../../../Schemas";
 import { BiUserCircle } from "react-icons/bi";
+import sucess from "../../../Shades/Toastes/sucess";
+import failed from "../../../Shades/Toastes/failed";
 
 const initialFormValue = {
   fullName: "",
@@ -29,6 +31,7 @@ const Registation = () => {
   const [user, setUser] = useState({});
   const [placemantIDs, setPlacemantIDs] = useState([]);
   const [errorContainer, setErrorContainer] = useState({});
+  const [valuesContainer, setValuesContainer] = useState({});
 
   const [condition, setCondition] = useState(false);
   const [processing, setProcessing] = useState(false);
@@ -43,19 +46,31 @@ const Registation = () => {
     onSubmit: (values) => {
       // console.log(values);
 
-      fetch(`http://localhost:8000/user/registation`, {
+      fetch(`http://localhost:8000/user/registation/data_verification`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
       })
         .then((res) => res.json())
-        .then((data) => console.log(data));
+        .then((data) => {
+          console.log(data);
+          if (data?.sucess) {
+            sucess("First Stap Done")
+          }
+          if (data?.failed) {
+            failed(data.failed);
+          }
+        });
     },
   });
 
   useEffect(() => {
     setErrorContainer(errors);
   }, [errors]);
+  useEffect(() => {
+    setValuesContainer(values);
+  }, [values]);
+
   const handlePlacementID = (e) => {
     const value = e.target.value;
     if (value) {
@@ -501,6 +516,7 @@ const Registation = () => {
           {/* <div className='form-navigation d-flex'><p>Didn't get the code? <a onClick={resendFunction} style={{cursor:"pointer"}}><span>Resend it</span></a></p></div> */}
         </form>
       )}
+      <ToastContainer />
     </section>
   );
 };
