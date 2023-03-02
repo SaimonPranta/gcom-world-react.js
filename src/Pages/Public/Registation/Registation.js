@@ -8,6 +8,7 @@ import { singUpSchema } from "../../../Schemas";
 import { BiUserCircle } from "react-icons/bi";
 import sucess from "../../../Shades/Toastes/sucess";
 import failed from "../../../Shades/Toastes/failed";
+import SelectProduct from "./SelectProduct/SelectProduct";
 
 const initialFormValue = {
   fullName: "",
@@ -27,19 +28,32 @@ const initialFormValue = {
 };
 
 const Registation = () => {
+    const [errorContainer, setErrorContainer] = useState({});
+    const [valuesContainer, setValuesContainer] = useState({});
+    const [condition, setCondition] = useState({
+      stapOne: true
+    });
+
   const [inputUser, setInputUser] = useState({});
   const [user, setUser] = useState({});
   const [placemantIDs, setPlacemantIDs] = useState([]);
-  const [errorContainer, setErrorContainer] = useState({});
-  const [valuesContainer, setValuesContainer] = useState({});
 
-  const [condition, setCondition] = useState(false);
+
   const [processing, setProcessing] = useState(false);
   const [value, setValue] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state ? location.state.from.pathname : "/";
   const { referID } = useParams();
+  const productArray = {
+    img: "https://static-01.daraz.com.bd/p/8cadfceb410b84cb3dedd7c729ca0c0c.jpg",
+    title: "mi a3 5inco display amulate fanale",
+    price: 500,
+    discount: 20,
+    point: 20,
+    rating: 3,
+  };
+
   const { values, errors, handleChange, handleSubmit } = useFormik({
     initialValues: initialFormValue,
     validationSchema: singUpSchema,
@@ -55,7 +69,8 @@ const Registation = () => {
         .then((data) => {
           console.log(data);
           if (data?.sucess) {
-            sucess("First Stap Done")
+            setCondition({stapTwo: true})
+            sucess("First Stap Done");
           }
           if (data?.failed) {
             failed(data.failed);
@@ -111,13 +126,43 @@ const Registation = () => {
     values.placementID = value;
     errors.placementID = "";
   };
+
+  const handleSelectProduct = (productID) => {
+    const currentInfo = { ...valuesContainer };
+    currentInfo["productID"] = productID;
+    setValuesContainer(currentInfo);
+  };
+  const handleSubmitProductForm = (e) => {
+    e.preventDefault();
+    if (!valuesContainer.productID) {
+      return failed("Please select your Packge and then try to submit");
+    }
+    // registation sumit prodcess will shift to after Number verification function
+    fetch(`http://localhost:8000/user/registation`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(valuesContainer),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        if (data?.sucess) {
+          sucess(data.sucess);
+        }
+        if(data.data){
+          
+        }
+        if (data?.failed) {
+          failed(data.failed);
+        }
+
+      });
+  };
   useEffect(() => {
     user._id && navigate(from, { replace: true });
   }, [user]);
 
-  const fromInputHandler = (e) => {
-    // inputHandler(e, inputUser, setInputUser);
-  };
+ 
   const varifierFunction = () => {
     const phoneNumber = "+88" + inputUser.phoneNumber;
     const appVerifier = window.recaptchaVerifier;
@@ -268,7 +313,7 @@ const Registation = () => {
 
   return (
     <section className="authentication m-auto text-white">
-      {!condition && (
+      {condition.stapOne && (
         <form
           onSubmit={handleSubmit}
           autoComplete="off"
@@ -481,7 +526,7 @@ const Registation = () => {
           <input type="submit" value="Next" />
           <div className="form-navigation d-flex">
             <p>
-              Already have an account?{" "}
+              Already have an account?
               <Link to="/login">
                 <span>Login</span>
               </Link>
@@ -494,7 +539,69 @@ const Registation = () => {
         </form>
       )}
 
-      {condition && (
+      {condition.stapTwo && (
+        <form
+          autoComplete="off"
+          autoCorrect="off"
+          id="registation_form"
+          onSubmit={handleSubmitProductForm}
+        >
+          <h6>Register an account</h6>
+          <label className="select-product-title">Select Your Packge</label>
+
+          <div className="select-packgae-container">
+            <div onClick={() => handleSelectProduct("2343sdfs")}>
+              <SelectProduct product={productArray} />
+            </div>
+            <div>
+              <SelectProduct product={productArray} />
+            </div>
+            <div>
+              <SelectProduct product={productArray} />
+            </div>
+            <div>
+              <SelectProduct product={productArray} />
+            </div>
+            <div>
+              <SelectProduct product={productArray} />
+            </div>
+            <div>
+              <SelectProduct product={productArray} />
+            </div>
+            <div>
+              <SelectProduct product={productArray} />
+            </div>
+            <div>
+              <SelectProduct product={productArray} />
+            </div>
+            <div>
+              <SelectProduct product={productArray} />
+            </div>
+            <div>
+              <SelectProduct product={productArray} />
+            </div>
+            <div>
+              <SelectProduct product={productArray} />
+            </div>
+            <div>
+              <SelectProduct product={productArray} />
+            </div>
+            <div>
+              <SelectProduct product={productArray} />
+            </div>
+            <div>
+              <SelectProduct product={productArray} />
+            </div>
+          </div>
+          <input type="submit" value="Submit" />
+
+          <div id="sign-in-button"></div>
+          <div className="bg-them-one" />
+          <div className="bg-them-two" />
+          <div className="bg-them-three" />
+        </form>
+      )}
+      {condition.stapThree && (
         <form onSubmit={handleVarification}>
           <h6>Validate OTP</h6>
           <label style={{ fontSize: ".9rem", fontWeight: "100" }}>
