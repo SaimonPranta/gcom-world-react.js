@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import "./Login.css";
 import { useFormik } from 'formik';
+import sucess from '../../../Shades/Toastes/sucess';
+import failed from '../../../Shades/Toastes/failed';
+import { setCookie } from '../../../Hooks/cookies';
 
 
 
@@ -49,6 +52,33 @@ const Login = () => {
       }
     }, [user, cooki]);
 
+    const { values, errors, handleChange, handleSubmit } = useFormik({
+      initialValues: {
+        userID: "",
+        password: ""
+      },
+      onSubmit: (values) => {
+        console.log(values);
+        fetch(`http://localhost:8000/user/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(values),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            console.log(data);
+            if (data.data) {
+              sucess("Login sucessfull");
+              setCookie("gcom-user-token", data.token);
+            }
+            if (data.failed) {
+              failed(data.failed);
+            }
+          });
+
+      }
+
+    })
     const fromInputHandler = (e) => {
     //   inputHandler(e, inputUser, setInputUser);
     };
@@ -244,32 +274,30 @@ const Login = () => {
     return (
       <section className="authentication m-auto">
         {!forgotPassCondition.forgotPassword ? (
-          <form onSubmit={handleLogin} autoComplete="off">
+          <form onSubmit={handleSubmit} autoComplete="off">
             <h6>Login</h6>
             <label>User ID</label>
             <input
               type="text"
               name="userID"
               placeholder="User ID"
-              value={
-                inputUser.userID ? inputUser.userID : ""
-              }
+              value={values.userID}
               required
               autoComplete="off"
-              onChange={fromInputHandler}
+              onChange={handleChange}
             />
-
+            {errors.userID && <p className="form-error">{errors.userID}</p>}
             <label>Password</label>
             <input
               type="password"
-              name="signInPassword"
+              name="password"
               placeholder="Password"
-              value={inputUser.signInPassword ? inputUser.signInPassword : ""}
+              value={values.password}
               required
               autoComplete="off"
-              onChange={fromInputHandler}
+              onChange={handleChange}
             />
-
+            {errors.password && <p className="form-error">{errors.password}</p>}
             <input type="submit" value="Login" required autoComplete="off" />
 
             <div className="form-navigation d-flex text-white">

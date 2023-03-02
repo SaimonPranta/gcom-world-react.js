@@ -9,6 +9,7 @@ import { BiUserCircle } from "react-icons/bi";
 import sucess from "../../../Shades/Toastes/sucess";
 import failed from "../../../Shades/Toastes/failed";
 import SelectProduct from "./SelectProduct/SelectProduct";
+import { setCookie } from "../../../Hooks/cookies";
 
 const initialFormValue = {
   fullName: "",
@@ -150,7 +151,7 @@ const Registation = () => {
           sucess(data.sucess);
         }
         if(data.data){
-          
+          setCookie("gcom-user-token", data.token);
         }
         if (data?.failed) {
           failed(data.failed);
